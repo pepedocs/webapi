@@ -1,0 +1,1 @@
+export SERVER_BIN_PATH=$PWD/cmd/web
