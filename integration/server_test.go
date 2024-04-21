@@ -31,6 +31,7 @@ func TestAPIServerResponse(t *testing.T) {
 	url := fmt.Sprintf("http://%s:%v", host, port)
 	tests := [][]string{
 		{url, "GET"},
+		{fmt.Sprintf("%s/time", url), "GET"},
 	}
 	t.Run("Server must respond to requests", func(t *testing.T) {
 		err := waitForServerReady(3, url)

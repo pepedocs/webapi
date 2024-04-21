@@ -37,8 +37,11 @@ func (s *WebAPIServer) Init() {
 func (s *WebAPIServer) wireRoutes() {
 	homeSvc := services.HomeService{}
 	homeCtrl := controllers.HomeController{HomeSvc: homeSvc}
+	swatchSvc := services.NewSwatchService()
+	swatchCtrl := controllers.SwatchTimeController{SwatchTimeSvc: swatchSvc}
 
 	s.router.HandleFunc("/", homeCtrl.Home).Methods("GET")
+	s.router.HandleFunc("/time", swatchCtrl.GetInternetTime).Methods("GET")
 }
 
 func (s *WebAPIServer) Start() error {
