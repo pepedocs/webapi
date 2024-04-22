@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/pepedocs/webapi/server"
+	log "github.com/sirupsen/logrus"
 )
 
 type serverArgs struct {
@@ -33,9 +33,17 @@ func parseArgs() serverArgs {
 func main() {
 	args := parseArgs()
 
+	webSocketServer, err := server.NewWebSocketServer()
+	if err != nil {
+		log.Fatalf("Failed to create websocket server: %v", err)
+	}
+
+	webSocketServer.Init()
+
 	webAPIServer, err := server.NewWebAPIServer(
 		args.port,
 		args.ipAddr,
+		server.WithWebSocketServer(webSocketServer),
 	)
 	if err != nil {
 		log.Fatalf("Failed to create web API server: %v", err)
@@ -43,20 +51,41 @@ func main() {
 
 	webAPIServer.Init()
 
+	exitNow := make(chan bool)
+
 	go func() {
 		// Todo: handle OS signals, is this necessary?
 		sigs := make(chan os.Signal, 1)
 		signal.Notify(sigs, syscall.SIGTERM, syscall.SIGINT)
 		<-sigs
 
-		log.Println("Server interrupted.")
+		log.Info("Server interrupted.")
 
 		if err := webAPIServer.Shutdown(); err != nil {
 			log.Fatalf("Failed to shutdown webapi server: %v", err)
 		}
+		if err := webSocketServer.Shutdown(); err != nil {
+			log.Fatalf("Failed to shutdown websocket srever: %v", err)
+		}
+
+		exitNow <- true
 	}()
 
-	if err := webAPIServer.Start(); err != nil {
-		log.Fatalf("Failed to start webapi server: %v", err)
-	}
+	go func() {
+		log.Println("Starting web API server")
+		if err := webAPIServer.Start(); err != nil {
+			exitNow <- true
+			log.Fatalf("Failed to start webapi server: %v", err)
+		}
+	}()
+
+	go func() {
+		log.Println("Starting websocket server")
+		if err := webSocketServer.Start(); err != nil {
+			exitNow <- true
+			log.Fatalf("Failed to start websocket server: %v", err)
+		}
+	}()
+
+	<-exitNow
 }
