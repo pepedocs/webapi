@@ -14,7 +14,7 @@ However, I wanted to challenge myself by implementing a composable and extensibl
 
 **controllers** - Controller instances that are only concerned with dispatching client requests to services.
 
-**controllers** - Service instances that are only concerned with providing specific services such as providing an interface to get the current swatch time.
+**services** - Service instances that are only concerned with providing specific services such as providing an interface to get the current swatch time.
 
 **integration** - Integration tests.
 
