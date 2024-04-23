@@ -1,8 +1,8 @@
 # webapi
-A modular HTTP API server that supports websocket connections. 
+A composable/extensible HTTP API server that supports websocket connections. 
 
 # About
-This is a submission for a certain golang assessment. The assessment is made to be ambiguous in terms of how it can be interpreted. For my case, I could've just written all these into one file and the same requirements will be met. 
+This is a submission for a certain golang assessment. The assessment requirements are made to be ambiguous in terms of how it can be interpreted. For my case, I could've just written all these into one file and the same requirements will be met. 
 
 However, I wanted to challenge myself by implementing a composable and extensible go HTTP API server so here this is the result. 
 
