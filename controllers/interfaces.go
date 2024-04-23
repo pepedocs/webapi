@@ -2,6 +2,6 @@ package controllers
 
 import "github.com/gorilla/websocket"
 
-type IWebSocketManager interface {
+type iWebSocketManager interface {
 	AddStringListener(func() string, *websocket.Conn)
 }

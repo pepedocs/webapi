@@ -15,7 +15,7 @@ type serverArgs struct {
 	ipAddr string
 }
 
-type IServer interface {
+type iServer interface {
 	Start() error
 	Shutdown() error
 	Init() error
@@ -38,7 +38,7 @@ func main() {
 		log.Fatalf("Failed to create websocket server: %v", err)
 	}
 
-	webSocketServer.Init()
+	initServrer(webSocketServer)
 
 	webAPIServer, err := server.NewWebAPIServer(
 		args.port,
@@ -49,7 +49,7 @@ func main() {
 		log.Fatalf("Failed to create web API server: %v", err)
 	}
 
-	webAPIServer.Init()
+	initServrer(webAPIServer)
 
 	exitNow := make(chan bool)
 
@@ -61,31 +61,36 @@ func main() {
 
 		log.Info("Server interrupted.")
 
-		if err := webAPIServer.Shutdown(); err != nil {
-			log.Fatalf("Failed to shutdown webapi server: %v", err)
-		}
-		if err := webSocketServer.Shutdown(); err != nil {
-			log.Fatalf("Failed to shutdown websocket srever: %v", err)
-		}
+		shutdownServer(webAPIServer)
+		shutdownServer(webSocketServer)
 
 		exitNow <- true
 	}()
 
+	startServer(webAPIServer, exitNow)
+	startServer(webSocketServer, exitNow)
+
+	<-exitNow
+}
+
+func startServer(server iServer, exitNow chan bool) {
 	go func() {
 		log.Println("Starting web API server")
-		if err := webAPIServer.Start(); err != nil {
+		if err := server.Start(); err != nil {
 			exitNow <- true
 			log.Fatalf("Failed to start webapi server: %v", err)
 		}
 	}()
+}
 
-	go func() {
-		log.Println("Starting websocket server")
-		if err := webSocketServer.Start(); err != nil {
-			exitNow <- true
-			log.Fatalf("Failed to start websocket server: %v", err)
-		}
-	}()
+func shutdownServer(server iServer) {
+	if err := server.Shutdown(); err != nil {
+		log.Fatalf("Failed to shutdown server: %v", err)
+	}
+}
 
-	<-exitNow
+func initServrer(server iServer) {
+	if err := server.Init(); err != nil {
+		log.Fatalf("Failed to init server: %v", err)
+	}
 }

@@ -23,7 +23,9 @@ func NewWebSocketServer() (*WebSocketServer, error) {
 	}, nil
 }
 
-func (s *WebSocketServer) Init() {}
+func (s *WebSocketServer) Init() error {
+	return nil
+}
 
 func (s *WebSocketServer) Start() error {
 	for {

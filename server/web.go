@@ -33,7 +33,7 @@ func NewWebAPIServer(port int, ipAddr string, options ...func(*WebAPIServer)) (*
 	return server, nil
 }
 
-func (s *WebAPIServer) Init() {
+func (s *WebAPIServer) Init() error {
 	s.httpServer.Handler = s.router
 	homeSvc := services.HomeService{}
 	homeCtrl := controllers.HomeController{HomeSvc: homeSvc}
@@ -45,6 +45,7 @@ func (s *WebAPIServer) Init() {
 	s.router.HandleFunc("/time", swatchCtrl.GetInternetTime).Methods("GET")
 	s.router.HandleFunc("/timews", swatchCtrl.GetInternetTimeWs).Methods("GET")
 	s.isInitialized = true
+	return nil
 }
 
 func (s *WebAPIServer) Start() error {

@@ -30,7 +30,7 @@ func TestGetInternetTime(t *testing.T) {
 	}
 	for _, test := range tests {
 		sw := Swatch{&test.switzerlandTime}
-		swatchTime, err := sw.GetInternetTime()
+		swatchTime, err := sw.getInternetTime()
 		assert.NoError(t, err)
 		assert.Equal(t, test.swatchTime, swatchTime)
 	}

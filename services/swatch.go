@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-const SECONDS_PER_BEAT = 86.4
+const secondsPerBeat = 86.4
 
-type ISwatch interface {
-	GetInternetTime() (string, error)
+type iSwatch interface {
+	getInternetTime() (string, error)
 }
 
 type Swatch struct {
@@ -18,7 +18,7 @@ type Swatch struct {
 }
 
 type SwatchService struct {
-	Swatch ISwatch
+	Swatch iSwatch
 }
 
 func NewSwatchService() SwatchService {
@@ -28,27 +28,26 @@ func NewSwatchService() SwatchService {
 }
 
 func (s SwatchService) GetInternetTime() (string, error) {
-	internetTime, err := s.Swatch.GetInternetTime()
+	internetTime, err := s.Swatch.getInternetTime()
 	internetTime = fmt.Sprintf("It is currently %s", internetTime)
 	return internetTime, err
 }
 
-// Gets the internet/swatch time
-func (s *Swatch) GetInternetTime() (string, error) {
+func (s *Swatch) getInternetTime() (string, error) {
 
-	bmtTime := s.GetBMTTime()
+	bmtTime := s.getBMTTime()
 
 	if s.switzerlandTime != nil {
 		bmtTime = *s.switzerlandTime
 	}
 
-	bmtMidnightTime := s.GetPreviousMidnight(bmtTime)
+	bmtMidnightTime := s.getPreviousMidnight(bmtTime)
 
 	// Seconds since BMT midngiht
 	secondsSinceBMTMidnight := bmtTime.Sub(bmtMidnightTime).Seconds()
 
 	// Convert to beats
-	numBeats := s.SecondsToBeats(secondsSinceBMTMidnight)
+	numBeats := s.secondsToBeats(secondsSinceBMTMidnight)
 
 	// Todo: Is there such thing as date format string in go?
 	tokens := strings.Split(bmtTime.Format(time.RFC3339), "T")
@@ -57,12 +56,12 @@ func (s *Swatch) GetInternetTime() (string, error) {
 	return fmt.Sprintf("%s@%v", date, numBeats), nil
 }
 
-func (s *Swatch) GetBMTTime() time.Time {
+func (s *Swatch) getBMTTime() time.Time {
 	loc, _ := time.LoadLocation("Africa/Casablanca")
 	return time.Now().In(loc)
 }
 
-func (s *Swatch) GetPreviousMidnight(sometime time.Time) time.Time {
+func (s *Swatch) getPreviousMidnight(sometime time.Time) time.Time {
 	return time.Date(
 		sometime.Year(),
 		sometime.Month(),
@@ -72,7 +71,7 @@ func (s *Swatch) GetPreviousMidnight(sometime time.Time) time.Time {
 	)
 }
 
-func (s *Swatch) SecondsToBeats(seconds float64) float64 {
-	beats := seconds / SECONDS_PER_BEAT
+func (s *Swatch) secondsToBeats(seconds float64) float64 {
+	beats := seconds / secondsPerBeat
 	return math.Round(beats*100) / 100
 }

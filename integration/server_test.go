@@ -2,7 +2,7 @@ package integration
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"testing"
@@ -17,18 +17,18 @@ import (
 func TestAPIServer(t *testing.T) {
 	host := "localhost"
 	port := 8000
-	webApiServer, err := server.NewWebAPIServer(port, host)
+	webAPIServer, err := server.NewWebAPIServer(port, host)
 	require.NoError(t, err)
-	webApiServer.Init()
+	require.NoError(t, webAPIServer.Init())
 
 	t.Cleanup(func() {
 		log.Println("Shutting down server.")
-		err := webApiServer.Shutdown()
+		err := webAPIServer.Shutdown()
 		require.NoError(t, err)
 	})
 
 	go func() {
-		webApiServer.Start()
+		require.NoError(t, webAPIServer.Start())
 	}()
 
 	url := fmt.Sprintf("http://%s:%v", host, port)
@@ -46,7 +46,7 @@ func TestAPIServer(t *testing.T) {
 				resp, err := http.Get(test[0])
 				require.NoError(t, err)
 				require.Equal(t, http.StatusOK, resp.StatusCode)
-				body, _ := ioutil.ReadAll(resp.Body)
+				body, _ := io.ReadAll(resp.Body)
 				log.Printf("Response: %s", body)
 			}
 		}
@@ -59,24 +59,24 @@ func TestWSServer(t *testing.T) {
 
 	wsServer, err := server.NewWebSocketServer()
 	require.NoError(t, err)
-	wsServer.Init()
-	webApiServer, err := server.NewWebAPIServer(port, host, server.WithWebSocketServer(wsServer))
+	require.NoError(t, wsServer.Init())
+	webAPIServer, err := server.NewWebAPIServer(port, host, server.WithWebSocketServer(wsServer))
 	require.NoError(t, err)
-	webApiServer.Init()
+	require.NoError(t, webAPIServer.Init())
 
 	t.Cleanup(func() {
 		log.Println("Shutting down server.")
-		err := webApiServer.Shutdown()
+		err := webAPIServer.Shutdown()
 		require.NoError(t, err)
 		err = wsServer.Shutdown()
 		require.NoError(t, err)
 	})
 
 	go func() {
-		webApiServer.Start()
+		require.NoError(t, webAPIServer.Start())
 	}()
 	go func() {
-		wsServer.Start()
+		require.NoError(t, wsServer.Start())
 	}()
 
 	err = waitForServerReady(3, fmt.Sprintf("http://%s:%v", host, port))

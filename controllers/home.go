@@ -5,12 +5,12 @@ import (
 	"net/http"
 )
 
-type IHomeService interface {
+type iHomeService interface {
 	Greet() string
 }
 
 type HomeController struct {
-	HomeSvc IHomeService
+	HomeSvc iHomeService
 }
 
 func (c *HomeController) Home(w http.ResponseWriter, r *http.Request) {

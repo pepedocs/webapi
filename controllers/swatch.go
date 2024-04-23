@@ -8,17 +8,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type ISwatchTimeService interface {
+type iSwatchTimeService interface {
 	GetInternetTime() (string, error)
 }
 
 type SwatchTimeController struct {
-	SwatchTimeSvc ISwatchTimeService
+	SwatchTimeSvc iSwatchTimeService
 	upgrader      websocket.Upgrader
-	wsMgr         IWebSocketManager
+	wsMgr         iWebSocketManager
 }
 
-func NewSwatchTimeController(swatch ISwatchTimeService, wm IWebSocketManager) *SwatchTimeController {
+func NewSwatchTimeController(swatch iSwatchTimeService, wm iWebSocketManager) *SwatchTimeController {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  2048,
 		WriteBufferSize: 2048,
