@@ -44,6 +44,8 @@ func (s *WebAPIServer) Init() error {
 	s.router.HandleFunc("/", homeCtrl.Home).Methods("GET")
 	s.router.HandleFunc("/time", swatchCtrl.GetInternetTime).Methods("GET")
 	s.router.HandleFunc("/timews", swatchCtrl.GetInternetTimeWs).Methods("GET")
+	s.router.HandleFunc("/timeupdating", swatchCtrl.GetInternetTimePage).Methods("GET")
+	s.router.HandleFunc("/timewsreg", swatchCtrl.GetInternetTimeWsRegister).Methods("GET")
 	s.isInitialized = true
 	return nil
 }

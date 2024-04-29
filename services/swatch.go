@@ -29,7 +29,6 @@ func NewSwatchService() SwatchService {
 
 func (s SwatchService) GetInternetTime() (string, error) {
 	internetTime, err := s.Swatch.getInternetTime()
-	internetTime = fmt.Sprintf("It is currently %s", internetTime)
 	return internetTime, err
 }
 
