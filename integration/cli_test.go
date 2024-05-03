@@ -12,6 +12,7 @@ import (
 
 func TestCLI(t *testing.T) {
 	path := os.Getenv("SERVER_BIN_PATH")
+	require.True(t, len(path) > 0)
 	cmd := exec.Command(path, "-h")
 	_, err := cmd.CombinedOutput()
 	require.NoError(t, err)
