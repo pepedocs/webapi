@@ -71,6 +71,8 @@ func (c *SwatchTimeController) GetSwatchTime() string {
 
 func (c *SwatchTimeController) GetInternetTimePage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	// Todo: Move this to a view, perhaps support html templates
 	timeupdateHTMLTpl := `
 	<!DOCTYPE html>
 	<html>
